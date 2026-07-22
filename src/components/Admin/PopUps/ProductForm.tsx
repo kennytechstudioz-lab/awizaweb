@@ -1,5 +1,5 @@
 'use client'
-import { appendForm } from '@/lib/helpers'
+import { appendForm, formatDateForInput } from '@/lib/helpers'
 import { validateInputs } from '@/lib/validation'
 import { useState } from 'react'
 import { MessageStore } from '@/src/zustand/notification/Message'
@@ -220,16 +220,18 @@ const ProductForm: React.FC = () => {
               />
             </div>
 
-            <div className="flex flex-col">
-              <label className="label">Date of Birth (Livestock)</label>
-              <input
-                type="date"
-                className="form-input"
-                name="dateOfBirth"
-                value={productForm.dateOfBirth ? new Date(productForm.dateOfBirth).toISOString().split('T')[0] : ''}
-                onChange={handleInputChange}
-              />
-            </div>
+            {productForm.type === 'Livestock' && (
+              <div className="flex flex-col">
+                <label className="label">Date of Birth (Livestock)</label>
+                <input
+                  type="date"
+                  className="form-input"
+                  name="dateOfBirth"
+                  value={formatDateForInput(productForm.dateOfBirth)}
+                  onChange={handleInputChange}
+                />
+              </div>
+            )}
             <div className="flex flex-col">
               <label className="label" htmlFor="">
                 Name
@@ -285,21 +287,6 @@ const ProductForm: React.FC = () => {
                 placeholder="Enter unit per purchase"
               />
             </div>
-
-            {productForm.type === 'Livestock' && (
-              <div className="flex flex-col">
-                <label className="label" htmlFor="">
-                  Date of Birth
-                </label>
-                <input
-                  className="form-input"
-                  name="dateOfBirth"
-                  value={productForm.dateOfBirth ? new Date(productForm.dateOfBirth).toISOString().split('T')[0] : ''}
-                  onChange={handleInputChange}
-                  type="date"
-                />
-              </div>
-            )}
 
             <div className="flex flex-col">
               <label className="label" htmlFor="">

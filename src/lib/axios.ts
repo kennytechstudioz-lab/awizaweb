@@ -7,11 +7,8 @@ import axios, {
   Method,
 } from 'axios'
 const apiClient = axios.create({
-  baseURL:
-    process.env.NODE_ENV === 'production'
-      ? process.env.NEXT_PUBLIC_PROD_API_URL
-      : process.env.NEXT_PUBLIC_DEV_API_URL,
-  timeout: 10000, // 10 seconds as requested for "bad network"
+  baseURL: process.env.NEXT_PUBLIC_PROD_API_URL,
+  timeout: 10000,
 })
 
 apiClient.interceptors.request.use((config) => {

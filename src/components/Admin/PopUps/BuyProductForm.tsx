@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { appendForm, formatMoney } from '@/lib/helpers'
+import { appendForm, formatMoney, formatDateForInput } from '@/lib/helpers'
 import { validateInputs } from '@/lib/validation'
 import { MessageStore } from '@/src/zustand/notification/Message'
 import ProductStore from '@/src/zustand/Product'
@@ -293,18 +293,20 @@ const BuyProductForm: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 mb-5">
-            <div className="flex flex-col flex-1">
-              <label className="label">Date of Birth (Livestock)</label>
-              <input
-                type="date"
-                className="form-input"
-                name="dateOfBirth"
-                value={productForm.dateOfBirth ? new Date(productForm.dateOfBirth).toISOString().split('T')[0] : ''}
-                onChange={handleInputChange}
-              />
+          {productForm.type === 'Livestock' && (
+            <div className="flex flex-wrap gap-3 mb-5">
+              <div className="flex flex-col flex-1">
+                <label className="label">Date of Birth (Livestock)</label>
+                <input
+                  type="date"
+                  className="form-input"
+                  name="dateOfBirth"
+                  value={formatDateForInput(productForm.dateOfBirth)}
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             <div className="flex flex-col">
@@ -370,19 +372,6 @@ const BuyProductForm: React.FC = () => {
                 <option value="Livestock">Livestock</option>
               </select>
             </div>
-
-            {productForm.type === 'Livestock' && (
-              <div className="flex flex-col">
-                <label className="label">Date of Birth</label>
-                <input
-                  className="form-input"
-                  name="dateOfBirth"
-                  value={productForm.dateOfBirth ? new Date(productForm.dateOfBirth).toISOString().split('T')[0] : ''}
-                  onChange={handleInputChange}
-                  type="date"
-                />
-              </div>
-            )}
             {isPurchaseMode && (
               <>
                 <div className="flex flex-col">
