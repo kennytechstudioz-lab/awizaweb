@@ -84,6 +84,7 @@ export interface Product {
   type: 'Feed' | 'Medicine' | 'Water' | 'Livestock' | 'General'
   isProducing: boolean
   isSelling: boolean
+  rate?: number
   createdAt: Date | null | number
   dateOfBirth?: string | Date | null
   seoTitle: string
@@ -116,6 +117,7 @@ export const ProductEmpty = {
   type: 'General' as const,
   isProducing: false,
   isSelling: false,
+  rate: 0,
   createdAt: 0,
   dateOfBirth: null,
   seoTitle: '',
@@ -301,7 +303,18 @@ const ProductStore = create<ProductState>((set) => ({
         ...updated[index],
         adjustedPrice: value,
       }
-      return { cartProducts: updated }
+      return {
+        cartProducts: updated,
+        totalAmount: updated.reduce(
+          (sum, item) =>
+            sum +
+            item.cartUnits *
+              (item.adjustedPrice && item.adjustedPrice > 0
+                ? item.adjustedPrice
+                : item.price || 0),
+          0
+        ),
+      }
     })
   },
 
@@ -409,7 +422,7 @@ const ProductStore = create<ProductState>((set) => ({
             ...prev,
             cartProducts: updatedCart,
             products: updateProductsCartUnits(p._id, 0),
-            totalAmount: updatedCart.reduce((sum, item) => sum + item.cartUnits * (item.price || 0), 0),
+            totalAmount: updatedCart.reduce((sum, item) => sum + item.cartUnits * (item.adjustedPrice && item.adjustedPrice > 0 ? item.adjustedPrice : (item.price || 0)), 0),
           };
         } else {
           const updatedCart = prev.cartProducts.map((item) =>
@@ -419,7 +432,7 @@ const ProductStore = create<ProductState>((set) => ({
             ...prev,
             cartProducts: updatedCart,
             products: updateProductsCartUnits(p._id, newUnits),
-            totalAmount: updatedCart.reduce((sum, item) => sum + item.cartUnits * (item.price || 0), 0),
+            totalAmount: updatedCart.reduce((sum, item) => sum + item.cartUnits * (item.adjustedPrice && item.adjustedPrice > 0 ? item.adjustedPrice : (item.price || 0)), 0),
           };
         }
       } else if (isAdded) {
@@ -428,7 +441,7 @@ const ProductStore = create<ProductState>((set) => ({
           ...prev,
           cartProducts: updatedCart,
           products: updateProductsCartUnits(p._id, 1),
-          totalAmount: updatedCart.reduce((sum, item) => sum + item.cartUnits * (item.price || 0), 0),
+          totalAmount: updatedCart.reduce((sum, item) => sum + item.cartUnits * (item.adjustedPrice && item.adjustedPrice > 0 ? item.adjustedPrice : (item.price || 0)), 0),
         };
       }
 
@@ -574,7 +587,12 @@ const ProductStore = create<ProductState>((set) => ({
         cartProducts: updatedCart,
         products: updateProductsCartUnits(productId, units),
         totalAmount: updatedCart.reduce(
-          (sum, item) => sum + item.cartUnits * (item.price || 0),
+          (sum, item) =>
+            sum +
+            item.cartUnits *
+              (item.adjustedPrice && item.adjustedPrice > 0
+                ? item.adjustedPrice
+                : item.price || 0),
           0
         ),
       }
